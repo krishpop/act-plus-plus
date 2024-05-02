@@ -56,7 +56,7 @@ def get_args_parser():
     parser.add_argument('--eval', action='store_true')
     parser.add_argument('--onscreen_render', action='store_true')
     parser.add_argument('--ckpt_dir', action='store', type=str, help='ckpt_dir', required=True)
-    parser.add_argument('--policy_class', action='store', type=str, help='policy_class, capitalize', required=True)
+    # parser.add_argument('--policy_class', action='store', type=str, help='policy_class, capitalize', required=True)
     parser.add_argument('--task_name', action='store', type=str, help='task_name', required=True)
     parser.add_argument('--seed', action='store', type=int, help='seed', required=True)
     parser.add_argument('--num_steps', action='store', type=int, help='num_epochs', required=True)
@@ -64,7 +64,7 @@ def get_args_parser():
     parser.add_argument('--chunk_size', action='store', type=int, help='chunk_size', required=False)
     parser.add_argument('--temporal_agg', action='store_true')
     
-    parser.add_argument('--use_vq', action='store_true')
+    parser.add_argument('--vq', '--use_vq', action='store_true')
     parser.add_argument('--vq_class', action='store', type=int, help='vq_class', required=False)
     parser.add_argument('--vq_dim', action='store', type=int, help='vq_dim', required=False)
     parser.add_argument('--load_pretrain', action='store_true', default=False)
@@ -85,10 +85,14 @@ def get_args_parser():
 
 def build_ACT_model_and_optimizer(args_override):
     parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
-    args = parser.parse_args()
+    required_args = ['--ckpt_dir', args_override['ckpt_dir'], '--task_name', args_override['task_name'], '--seed', str(args_override['seed']), '--num_steps', str(args_override['num_steps'])]
+    for arg in ['ckpt_dir', 'task_name', 'seed', 'num_steps']:
+        args_override.pop(arg, None)
+    overrides = argparse.Namespace(**args_override)
+    args = parser.parse_args(args=required_args, namespace=overrides)
 
-    for k, v in args_override.items():
-        setattr(args, k, v)
+    # for k, v in args_override.items():
+    #     setattr(args, k, v)
 
     model = build_ACT_model(args)
     model.cuda()
