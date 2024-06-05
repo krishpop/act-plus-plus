@@ -95,6 +95,11 @@ class Backbone(BackboneBase):
 
             name = name[4:]
             backbone = load_r3m(name)
+            # If the model is wrapped in DataParallel, access the underlying module
+            if isinstance(backbone, nn.DataParallel):
+                backbone = backbone.module
+            backbone = backbone.convnet
+
         else:
             backbone = getattr(torchvision.models, name)(
                 replace_stride_with_dilation=[False, False, dilation],
