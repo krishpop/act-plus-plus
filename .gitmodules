@@ -1,0 +1,2 @@
+[submodule "byol_pytorch"]
+	url = git@github.com:lucidrains/byol-pytorch.git
