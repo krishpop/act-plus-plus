@@ -85,10 +85,15 @@ def get_args_parser():
 
 def build_ACT_model_and_optimizer(args_override):
     parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
-    args = parser.parse_args()
+    required_args = ['--ckpt_dir', args_override['ckpt_dir'], '--task_name', args_override['task_name'], '--seed', str(args_override['seed']), '--num_steps', str(args_override['num_steps']),
+                     '--policy_class', args_override["policy_class"]]
+    for arg in ['ckpt_dir', 'task_name', 'seed', 'num_steps', 'policy_class']:
+        args_override.pop(arg, None)
+    overrides = argparse.Namespace(**args_override)
+    args = parser.parse_args(args=required_args, namespace=overrides)
 
-    for k, v in args_override.items():
-        setattr(args, k, v)
+    # for k, v in args_override.items():
+    #     setattr(args, k, v)
 
     model = build_ACT_model(args)
     model.cuda()
